@@ -1,10 +1,11 @@
 import Layout from './components/layout/Layout'
+import Hero from './components/sections/Hero'
 
 function App() {
   return (
     <Layout>
       <div className="max-w-5xl mx-auto px-6">
-        <h1 className="text-3xl font-bold">Hello</h1>
+        <Hero />
       </div>
     </Layout>
   )
