@@ -1,52 +1,80 @@
+import { useState } from 'react'
+
 function Work() {
+  const [loadedImages, setLoadedImages] = useState({})
+
   const projects = [
     {
       id: 1,
-      title: "SkinSight AI",
-      category: "Web-App",
+      title: "SKinSight AI",
+      category: "WebApp",
       year: "2025",
-      image: "https://placehold.co/600x400/e5e7eb/9ca3af?text=Project+1"
+      description: "An AI-powered skin analysis tool that provides personalized skincare recommendations based on user-uploaded photos and assessment.",
+      image: "/images/project1.jpg",  
+      link: "#"  
     }
   ]
 
+  const handleImageLoad = (id) => {
+    setLoadedImages(prev => ({ ...prev, [id]: true }))
+  }
+
   return (
-    <section id="work" className="py-20 sm:py-28">
-      <div className="mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 mb-3">
+    <section id="work" className="py-16 sm:py-20 lg:py-28">
+      <div className="mb-10 sm:mb-12 lg:mb-16">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 mb-2 sm:mb-3">
           Selected work
         </h2>
-        <p className="text-gray-500 max-w-md">
-          A collection of my projects, from concept to launch.
+        <p className="text-sm sm:text-base text-gray-500 max-w-md">
+          A collection of my recent projects, from concept to launch.
         </p>
       </div>
 
-      {/* Responsive Grid - 1 column on mobile, 2 on tablet, 3 on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {/* Responsive Grid */}
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
         {projects.map((project) => (
           <a 
             key={project.id}
-            href="#" 
-            className="group cursor-pointer"
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group cursor-pointer block"
           >
-            <div className="overflow-hidden rounded-2xl bg-gray-100 mb-4">
+            {/* Image Container */}
+            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gray-100 mb-3 sm:mb-4 aspect-[4/3]">
+              {!loadedImages[project.id] && (
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse" />
+              )}
               <img 
-                src={project.image} 
+                src={project.image}
                 alt={project.title}
-                className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition duration-500"
+                className={`w-full h-full object-cover transition-all duration-500 ${
+                  loadedImages[project.id] ? 'opacity-100' : 'opacity-0'
+                } group-hover:scale-105 transition-transform duration-500`}
+                onLoad={() => handleImageLoad(project.id)}
+                onError={(e) => {
+                  e.target.src = "https://placehold.co/600x400/e5e7eb/9ca3af?text=Image+Not+Found"
+                  handleImageLoad(project.id)
+                }}
               />
             </div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
+            
+            {/* Project Info */}
+            <div>
+              <div className="flex justify-between items-start gap-2 mb-1">
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                   {project.title}
                 </h3>
-                <p className="text-sm text-gray-500">
-                  {project.category}
-                </p>
+                <span className="text-xs text-gray-400 flex-shrink-0">
+                  {project.year}
+                </span>
               </div>
-              <span className="text-sm text-gray-400">
-                {project.year}
-              </span>
+              <p className="text-xs sm:text-sm text-gray-500 mb-1">
+                {project.category}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-400">
+                {project.description}
+              </p>
             </div>
           </a>
         ))}
