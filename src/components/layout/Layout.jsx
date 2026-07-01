@@ -1,11 +1,16 @@
 import Header from './Header'
 import Footer from './Footer'
+import ThemeToggle from '../ThemeToggle'
 
-function Layout({ children }) {
+function Layout({ landing, children }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="app-canvas">
+      <ThemeToggle />
       <Header />
-      <main className="pt-24">
+      <div className="app-landing">
+        {landing}
+      </div>
+      <main className="app-main">
         {children}
       </main>
       <Footer />

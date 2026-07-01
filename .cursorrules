@@ -1,0 +1,82 @@
+# Portfolio — Context Budget & Project State
+
+You operate under a strict context budget. Prefer reading files over replaying chat history. When history grows long, compact it yourself using the rules below.
+
+## When to compact
+
+Compact conversation context when ANY of these are true:
+- The user asks to continue, resume, or pick up prior work without restating requirements
+- You would need to reference more than ~3 prior turns to answer
+- Prior turns contain repeated file dumps, failed attempts, or superseded plans
+- A task phase completed (planning → implementation → review)
+
+Do NOT wait for the user to ask. Proactively treat older turns as disposable once their facts are captured in **Active State** (below).
+
+## Prune / summarize / preserve
+
+| Tier | Action | Examples |
+|------|--------|----------|
+| **DISCARD** | Omit entirely | Tool noise, duplicate reads, rejected approaches, verbose diffs already applied, "I'll now…" narration |
+| **SUMMARIZE** | One line max | Exploration dead-ends, debugging steps whose fix is merged, style debates resolved by existing code |
+| **PRESERVE** | Keep verbatim or in Active State | User constraints, explicit "don't"/"must", open bugs, in-progress edits, deployment targets, uncommitted decisions |
+
+After compacting, never rely on pruned history. Re-read files if implementation details matter.
+
+## Active State (carry forward)
+
+When compacting—or starting a continuation—maintain this block mentally and restate only what changed:
+
+```
+TASK: <current goal in ≤15 words>
+STATUS: <not started | in progress | blocked | done>
+SCOPE: <files/sections affected>
+DECISIONS: <bullet list of binding choices made this session>
+OPEN: <unresolved questions or blockers>
+NEXT: <single concrete next action>
+```
+
+Update `DECISIONS` when the user picks an option. Drop resolved items from `OPEN`. Replace `NEXT` each turn.
+
+## Project snapshot (canonical — do not re-derive from chat)
+
+**Stack:** React 19 + Vite 8, JavaScript (not TypeScript), Tailwind CSS v4 (`@import 'tailwindcss'` in CSS), ESLint. No router—single-page with hash anchors.
+
+**Structure:**
+- `src/App.jsx` — composes sections inside `Layout`
+- `src/components/layout/` — `Layout`, `Header`, `Footer`
+- `src/components/sections/` — `Hero`, `Work`, `About`, `Contact` (ids: `hero`, `work`, `about`, `contact`)
+- `src/components/ThemeToggle.jsx` — fixed theme switcher
+- `src/hooks/useTheme.js` — `data-theme` on `<html>` + `<body>`, localStorage key `theme`, system preference fallback
+- `src/index.css` — design tokens as CSS variables (`--bg-color`, `--text-color`, etc.) for light/dark; semantic classes (`.site-header__*`, `.theme-toggle`, `.app-shell`)
+
+**Theme rules:** Use CSS variables and semantic classes for theme-aware UI—not hardcoded `gray-*` for new work. Existing sections may still use Tailwind grays; migrate when touching a file.
+
+**Layout conventions:** `max-w-5xl mx-auto px-6` content width. Header is fixed with scroll-spy nav. Smooth scroll via `html { scroll-behavior: smooth }`. Custom breakpoint `xs: 480px` in Tailwind config.
+
+**Scripts:** `npm run dev` | `build` | `lint` | `preview`
+
+**Out of scope unless asked:** Backend, CMS, analytics, tests, TypeScript migration, React Router.
+
+## Token-saving behavior
+
+1. **Read targeted files** — Use grep/glob before reading whole directories. Read only changed or relevant files.
+2. **No history replay** — Don't quote or paraphrase long prior assistant messages. Summarize outcomes.
+3. **Small diffs** — Match existing patterns; don't paste entire files when a hunk suffices.
+4. **One concern per turn** — Finish the stated task before expanding scope.
+5. **Reuse this snapshot** — Treat the Project snapshot above as ground truth for architecture; chat history is not.
+
+## Coding standards (minimal)
+
+- Functional React components, default exports for sections/layout
+- Colocate section-specific markup in `sections/`; shared chrome in `layout/`
+- Prefer existing CSS variable tokens over new one-off colors
+- Keep responsive patterns: mobile-first, `sm:`/`md:`/`lg:` breakpoints, `xs:` for tight layouts
+- No commits unless the user explicitly asks
+
+## Compaction output (when user says "continue" or context is stale)
+
+Reply with ONLY:
+1. Updated **Active State** block (≤8 lines)
+2. The work performed or answer requested
+
+Skip recap of discarded history, tool call play-by-play, and file trees the user didn't ask for.

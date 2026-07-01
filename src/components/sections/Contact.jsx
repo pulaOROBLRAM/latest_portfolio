@@ -1,25 +1,28 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+
+const INITIAL_FORM_DATA = {
+  name: '',
+  email: '',
+  message: ''
+}
 
 function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  })
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA)
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     // Handle form submission here (connect to email service later)
     console.log('Form submitted:', formData)
     alert('Message sent! (Demo mode)')
-    setFormData({ name: '', email: '', message: '' })
+    setFormData(INITIAL_FORM_DATA)
   }
 
   const socialLinks = [
@@ -75,7 +78,7 @@ function Contact() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-400 transition bg-white"
+              className="form-input"
               placeholder="Your name"
             />
           </div>
@@ -91,7 +94,7 @@ function Contact() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-400 transition bg-white"
+              className="form-input"
               placeholder="your@email.com"
             />
           </div>
@@ -107,7 +110,7 @@ function Contact() {
               onChange={handleChange}
               required
               rows="4"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-400 transition bg-white resize-none"
+              className="form-input resize-none"
               placeholder="Tell me about your project..."
             />
           </div>

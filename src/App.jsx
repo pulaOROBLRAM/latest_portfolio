@@ -6,9 +6,14 @@ import Contact from './components/sections/Contact'
 
 function App() {
   return (
-    <Layout>
+    <Layout
+      landing={
+        <div className="max-w-5xl mx-auto px-6">
+          <Hero />
+        </div>
+      }
+    >
       <div className="max-w-5xl mx-auto px-6">
-        <Hero />
         <Work />
         <About />
         <Contact />
