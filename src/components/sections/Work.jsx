@@ -30,7 +30,7 @@ function Work() {
       </div>
 
       {/* Responsive Grid */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-8">
         {projects.map((project) => (
           <a 
             key={project.id}
@@ -40,7 +40,7 @@ function Work() {
             className="group cursor-pointer block"
           >
             {/* Image Container */}
-            <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gray-100 mb-3 sm:mb-4 aspect-[4/3]">
+            <div className="relative overflow-hidden rounded-lg sm:rounded-2xl bg-gray-100 mb-2 sm:mb-4 aspect-square sm:aspect-[4/3]">
               {!loadedImages[project.id] && (
                 <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 animate-pulse" />
               )}
@@ -60,18 +60,18 @@ function Work() {
             
             {/* Project Info */}
             <div>
-              <div className="flex justify-between items-start gap-2 mb-1">
-                <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+              <div className="flex justify-between items-start gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+                <h3 className="font-semibold text-gray-900 text-xs sm:text-base leading-tight">
                   {project.title}
                 </h3>
-                <span className="text-xs text-gray-400 flex-shrink-0">
+                <span className="text-[10px] sm:text-xs text-gray-400 flex-shrink-0">
                   {project.year}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-500 mb-1">
+              <p className="text-[10px] sm:text-sm text-gray-500 mb-0.5 sm:mb-1">
                 {project.category}
               </p>
-              <p className="text-xs sm:text-sm text-gray-400">
+              <p className="hidden sm:block text-xs sm:text-sm text-gray-400 line-clamp-2">
                 {project.description}
               </p>
             </div>
