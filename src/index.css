@@ -215,7 +215,6 @@ body {
     background-color 0.45s ease,
     backdrop-filter 0.45s ease,
     -webkit-backdrop-filter 0.45s ease;
-  view-transition-name: site-header;
 }
 
 .site-header nav {
@@ -358,7 +357,6 @@ body {
   right: 1.25rem;
   bottom: 1.25rem;
   z-index: 60;
-  view-transition-name: theme-toggle;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -672,23 +670,164 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.45s;
+.theme-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.theme-transition__sky {
+  position: absolute;
+  inset: 0;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.theme-transition__sky::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 62%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.15),
+    transparent
+  );
+}
+
+.theme-transition__sun,
+.theme-transition__moon {
+  position: absolute;
+  left: 50%;
+  top: 18vh;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation-duration: 1.2s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.theme-transition__sun {
+  background: #fcd34d;
+  box-shadow: 0 0 60px 20px rgb(252 211 77 / 0.6);
+}
+
+.theme-transition__moon {
+  background: #e2e8f0;
+  box-shadow:
+    0 0 40px 12px rgb(226 232 240 / 0.35),
+    inset -10px -6px 0 rgb(148 163 184 / 0.35);
+}
+
+.theme-transition--to-dark .theme-transition__sky {
+  background: linear-gradient(
+    180deg,
+    #38bdf8 0%,
+    #7dd3fc 40%,
+    #fdba74 68%,
+    #1e3a5f 72%,
+    #0f172a 100%
+  );
+  animation-name: theme-sky-to-dark;
+}
+
+.theme-transition--to-dark .theme-transition__sun {
+  animation-name: theme-sun-set;
+}
+
+.theme-transition--to-dark .theme-transition__moon {
+  opacity: 0;
+  animation-name: theme-moon-rise;
+}
+
+.theme-transition--to-light .theme-transition__sky {
+  background: linear-gradient(
+    180deg,
+    #0f172a 0%,
+    #1e293b 35%,
+    #334155 62%,
+    #fdba74 68%,
+    #38bdf8 100%
+  );
+  animation-name: theme-sky-to-light;
+}
+
+.theme-transition--to-light .theme-transition__moon {
+  animation-name: theme-moon-set;
+}
+
+.theme-transition--to-light .theme-transition__sun {
+  opacity: 0;
+  animation-name: theme-sun-rise;
+}
+
+@keyframes theme-sun-set {
+  to {
+    transform: translateX(-50%) translateY(120vh);
+    opacity: 0;
+  }
+}
+
+@keyframes theme-moon-rise {
+  from {
+    transform: translateX(-50%) translateY(120vh);
+    opacity: 0;
   }
 
-  ::view-transition-group(site-header),
-  ::view-transition-group(theme-toggle) {
-    animation-duration: 0.45s;
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes theme-moon-set {
+  to {
+    transform: translateX(-50%) translateY(120vh);
+    opacity: 0;
+  }
+}
+
+@keyframes theme-sun-rise {
+  from {
+    transform: translateX(-50%) translateY(120vh);
+    opacity: 0;
   }
 
-  ::view-transition-old(site-header),
-  ::view-transition-new(site-header),
-  ::view-transition-old(theme-toggle),
-  ::view-transition-new(theme-toggle) {
-    animation: none;
-    mix-blend-mode: normal;
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes theme-sky-to-dark {
+  to {
+    background: linear-gradient(
+      180deg,
+      #0f172a 0%,
+      #1e293b 40%,
+      #090a0f 68%,
+      #090a0f 100%
+    );
+  }
+}
+
+@keyframes theme-sky-to-light {
+  to {
+    background: linear-gradient(
+      180deg,
+      #38bdf8 0%,
+      #7dd3fc 40%,
+      #fdba74 68%,
+      #ffffff 100%
+    );
   }
 }
 
@@ -715,8 +854,18 @@ body {
   .hero__btn-primary,
   .hero__btn-secondary,
   .hero__meta,
-  .hero__eyebrow-dot {
+  .hero__eyebrow-dot,
+  .theme-transition,
+  .theme-transition__sky,
+  .theme-transition__sun,
+  .theme-transition__moon {
     transition-duration: 0.01ms !important;
+  }
+
+  .theme-transition__sky,
+  .theme-transition__sun,
+  .theme-transition__moon {
+    animation: none !important;
   }
 
   .hero__eyebrow,

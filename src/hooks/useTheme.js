@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { playThemeTransition } from '../utils/playThemeTransition'
 
 const STORAGE_KEY = 'theme'
 
@@ -20,19 +21,20 @@ function getInitialTheme() {
   return getStoredTheme() ?? getSystemTheme() ?? 'light'
 }
 
-function applyTheme(theme, { animate = false } = {}) {
+async function applyTheme(theme, { animate = false } = {}) {
   const update = () => {
     document.documentElement.setAttribute('data-theme', theme)
     document.body.setAttribute('data-theme', theme)
   }
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (!animate || prefersReduced || !document.startViewTransition) {
+  if (!animate || prefersReduced) {
     update()
     return
   }
 
-  document.startViewTransition(update)
+  const transition = playThemeTransition(theme, { onBlocked: update })
+  await transition
 }
 
 applyTheme(getInitialTheme())
