@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { playThemeTransition } from '../utils/playThemeTransition'
 
 const STORAGE_KEY = 'theme'
@@ -41,27 +41,23 @@ applyTheme(getInitialTheme())
 
 export function useTheme() {
   const [theme, setThemeState] = useState(getInitialTheme)
-  const isFirstRender = useRef(true)
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    applyTheme(theme, { animate: true })
-  }, [theme])
 
   useEffect(() => {
     if (getStoredTheme()) return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => setThemeState(getSystemTheme())
+    const handleChange = () => {
+      const next = getSystemTheme()
+      applyTheme(next, { animate: false })
+      setThemeState(next)
+    }
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   const setTheme = useCallback((next) => {
+    applyTheme(next, { animate: false })
     setThemeState(next)
     try {
       localStorage.setItem(STORAGE_KEY, next)
@@ -73,6 +69,7 @@ export function useTheme() {
   const toggleTheme = useCallback(() => {
     setThemeState((current) => {
       const next = current === 'dark' ? 'light' : 'dark'
+      applyTheme(next, { animate: true })
       try {
         localStorage.setItem(STORAGE_KEY, next)
       } catch {
