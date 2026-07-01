@@ -9,9 +9,8 @@ function Work() {
       title: "SKinSight AI",
       category: "WebApp",
       year: "2025",
-      description: "An AI-powered skin analysis tool that provides personalized skincare recommendations based on user-uploaded photos and assessment.",
-      image: "/images/project1.jpg",  
-      link: "#"  
+      description: "An AI-powered skin analysis tool that delivers personalized recommendations based on user photos, offering a smart initial assessment that seamlessly connects you with skincare professionals.",
+      image: "../../../public/images/skinsight.png"
     }
   ]
 

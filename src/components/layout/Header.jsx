@@ -49,12 +49,9 @@ function Header() {
 
   return (
     <header className="site-header">
-      <nav className="max-w-5xl mx-auto px-6 py-4 sm:py-5 flex justify-between items-center">
-        <a 
-          href="#hero" 
-          className="site-header__logo text-xl font-medium tracking-tight"
-        >
-          Khaki
+      <nav className="max-w-5xl mx-auto px-6 py-4 sm:py-1 flex justify-between items-center">
+        <a href="#hero" className="site-header__logo" aria-label="Khaki — home">
+          <span className="site-header__logo-mark" aria-hidden="true" />
         </a>
 
         <ul className="hidden sm:flex gap-8">

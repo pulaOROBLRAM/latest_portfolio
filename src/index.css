@@ -72,6 +72,7 @@
   --hero-glow-mid: rgb(241 245 249 / 0.35);
   --hero-headline-accent: #64748b;
   --hero-status-green: #16a34a;
+  --logo-size: 2rem;
 }
 
 [data-theme='dark'] {
@@ -103,6 +104,14 @@
   --hero-glow-mid: rgb(35 50 90 / 0.28);
   --hero-headline-accent: #d1d5db;
   --hero-status-green: #00ff00;
+}
+
+@media (min-width: 640px) {
+  :root,
+  [data-theme='light'],
+  [data-theme='dark'] {
+    --logo-size: 4rem;
+  }
 }
 
 html {
@@ -222,12 +231,25 @@ body {
 }
 
 .site-header__logo {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-color);
-  transition: color 0.45s ease;
+  transition:
+    color 0.45s ease,
+    opacity 0.45s ease;
 }
 
 .site-header__logo:hover {
   color: var(--text-muted);
+}
+
+.site-header__logo-mark {
+  display: block;
+  width: var(--logo-size);
+  height: var(--logo-size);
+  background-color: currentColor;
+  mask: url('/images/logo.svg') center / contain no-repeat;
+  -webkit-mask: url('/images/logo.svg') center / contain no-repeat;
 }
 
 .site-header__link {
@@ -434,6 +456,35 @@ body {
 .form-input::-moz-placeholder {
   color: var(--input-placeholder-color);
   opacity: 1;
+}
+
+.form-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.form-status {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.form-status--success {
+  color: var(--hero-status-green);
+}
+
+.form-status--error {
+  color: #dc2626;
+}
+
+[data-theme='dark'] .form-status--error {
+  color: #f87171;
 }
 
 @keyframes hero-fade-in {

@@ -6,8 +6,13 @@ const INITIAL_FORM_DATA = {
   message: ''
 }
 
+const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
+
 function Contact() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
+  const [botcheck, setBotcheck] = useState('')
+  const [status, setStatus] = useState('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target
@@ -15,14 +20,56 @@ function Contact() {
       ...prev,
       [name]: value
     }))
+    setStatus('idle')
+    setErrorMessage('')
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Handle form submission here (connect to email service later)
-    console.log('Form submitted:', formData)
-    alert('Message sent! (Demo mode)')
-    setFormData(INITIAL_FORM_DATA)
+
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+    if (!accessKey) {
+      setStatus('error')
+      setErrorMessage(
+        'Contact form is not configured. Add VITE_WEB3FORMS_ACCESS_KEY to .env.local (see .env.example).'
+      )
+      return
+    }
+
+    setStatus('submitting')
+    setErrorMessage('')
+
+    try {
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: `Portfolio contact from ${formData.name}`,
+          from_name: formData.name,
+          replyto: formData.email,
+          botcheck
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to send message. Please try again.')
+      }
+
+      setStatus('success')
+      setFormData(INITIAL_FORM_DATA)
+      setBotcheck('')
+    } catch (err) {
+      setStatus('error')
+      setErrorMessage(
+        err instanceof Error ? err.message : 'Failed to send message. Please try again.'
+      )
+    }
   }
 
   const socialLinks = [
@@ -31,6 +78,8 @@ function Contact() {
     { name: 'Facebook', url: 'https://facebook.com/akitwdra'},
     { name: 'Email', url: 'mailto:akitwdra@gmail.com'}
   ]
+
+  const isSubmitting = status === 'submitting'
 
   return (
     <section id="contact" className="py-20 sm:py-28 border-t border-gray-100">
@@ -67,6 +116,17 @@ function Contact() {
 
         {/* Right column - Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
+          <input
+            type="text"
+            name="botcheck"
+            value={botcheck}
+            onChange={(e) => setBotcheck(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="form-honeypot"
+          />
+
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Name
@@ -78,6 +138,7 @@ function Contact() {
               value={formData.name}
               onChange={handleChange}
               required
+              disabled={isSubmitting}
               className="form-input"
               placeholder="Your name"
             />
@@ -94,6 +155,7 @@ function Contact() {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={isSubmitting}
               className="form-input"
               placeholder="your@email.com"
             />
@@ -109,18 +171,33 @@ function Contact() {
               value={formData.message}
               onChange={handleChange}
               required
+              disabled={isSubmitting}
               rows="4"
               className="form-input resize-none"
               placeholder="Tell me about your project..."
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full sm:w-auto px-8 py-3 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-800 transition"
-          >
-            Send message →
-          </button>
+          <div className="space-y-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-8 py-3 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? 'Sending…' : 'Send message →'}
+            </button>
+
+            {status === 'success' && (
+              <p className="form-status form-status--success" role="status">
+                Message sent! I'll get back to you soon.
+              </p>
+            )}
+            {status === 'error' && (
+              <p className="form-status form-status--error" role="alert">
+                {errorMessage}
+              </p>
+            )}
+          </div>
         </form>
       </div>
     </section>
