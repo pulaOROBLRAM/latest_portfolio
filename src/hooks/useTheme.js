@@ -66,18 +66,16 @@ export function useTheme() {
     }
   }, [])
 
-  const toggleTheme = useCallback(() => {
-    setThemeState((current) => {
-      const next = current === 'dark' ? 'light' : 'dark'
-      applyTheme(next, { animate: true })
-      try {
-        localStorage.setItem(STORAGE_KEY, next)
-      } catch {
-        // localStorage unavailable
-      }
-      return next
-    })
-  }, [])
+  const toggleTheme = useCallback(async () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setThemeState(next)
+    try {
+      localStorage.setItem(STORAGE_KEY, next)
+    } catch {
+      // localStorage unavailable
+    }
+    await applyTheme(next, { animate: true })
+  }, [theme])
 
   return { theme, setTheme, toggleTheme, isDark: theme === 'dark' }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { isThemeTransitionActive } from '../utils/playThemeTransition'
 import { useTheme } from '../hooks/useTheme'
 
 const SCROLL_TOP_THRESHOLD = 8
@@ -34,6 +35,7 @@ function ensureAtTop() {
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
   const busyRef = useRef(false)
+  const [isBusy, setIsBusy] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const isDark = theme === 'dark'
   const nextMode = isDark ? 'Light' : 'Dark'
@@ -49,14 +51,16 @@ function ThemeToggle() {
   }, [])
 
   const handleClick = async () => {
-    if (busyRef.current) return
+    if (busyRef.current || isThemeTransitionActive()) return
 
     busyRef.current = true
+    setIsBusy(true)
     try {
       await ensureAtTop()
-      toggleTheme()
+      await toggleTheme()
     } finally {
       busyRef.current = false
+      setIsBusy(false)
     }
   }
 
@@ -68,7 +72,9 @@ function ThemeToggle() {
     <button
       type="button"
       onClick={handleClick}
+      disabled={isBusy}
       aria-label={ariaLabel}
+      aria-busy={isBusy}
       className="theme-toggle"
     >
       <span className="theme-toggle__icon" aria-hidden="true">

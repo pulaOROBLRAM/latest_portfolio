@@ -383,6 +383,12 @@ body {
   box-shadow: 0 12px 28px var(--toggle-shadow);
 }
 
+.theme-toggle:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .theme-toggle:focus-visible {
   outline: 2px solid var(--toggle-text);
   outline-offset: 3px;
@@ -675,15 +681,27 @@ body {
   inset: 0;
   z-index: 200;
   overflow: hidden;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: wait;
+  touch-action: none;
+  contain: layout style paint;
+  opacity: 0;
+  animation:
+    theme-overlay-in var(--tt-fade-in, 400ms) ease-out forwards,
+    theme-overlay-out var(--tt-fade-out, 450ms) ease-in var(--tt-fade-out-delay, 2000ms) forwards;
+}
+
+html.theme-transition-active,
+html.theme-transition-active body {
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
 }
 
 .theme-transition__sky {
   position: absolute;
   inset: 0;
-  animation-duration: 1.2s;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: forwards;
+  z-index: 1;
 }
 
 .theme-transition__sky::after {
@@ -701,30 +719,36 @@ body {
   );
 }
 
+.theme-transition__curtain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .theme-transition__sun,
 .theme-transition__moon {
   position: absolute;
   left: 50%;
-  top: 18vh;
-  width: 4.5rem;
-  height: 4.5rem;
+  top: 20vh;
+  z-index: 2;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: 50%;
-  transform: translateX(-50%);
-  animation-duration: 1.2s;
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: forwards;
+  transform: translate3d(-50%, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .theme-transition__sun {
   background: #fcd34d;
-  box-shadow: 0 0 60px 20px rgb(252 211 77 / 0.6);
+  box-shadow: 0 0 24px 6px rgb(252 211 77 / 0.45);
 }
 
 .theme-transition__moon {
   background: #e2e8f0;
-  box-shadow:
-    0 0 40px 12px rgb(226 232 240 / 0.35),
-    inset -10px -6px 0 rgb(148 163 184 / 0.35);
+  box-shadow: inset -8px -5px 0 rgb(148 163 184 / 0.35);
 }
 
 .theme-transition--to-dark .theme-transition__sky {
@@ -736,16 +760,33 @@ body {
     #1e3a5f 72%,
     #0f172a 100%
   );
-  animation-name: theme-sky-to-dark;
+}
+
+.theme-transition--to-dark .theme-transition__sky.is-blocked {
+  background: linear-gradient(
+    180deg,
+    #0f172a 0%,
+    #1e293b 40%,
+    #090a0f 68%,
+    #090a0f 100%
+  );
 }
 
 .theme-transition--to-dark .theme-transition__sun {
-  animation-name: theme-sun-set;
+  animation: theme-exit-down var(--tt-exit, 700ms) ease-in var(--tt-exit-delay, 400ms) forwards;
 }
 
 .theme-transition--to-dark .theme-transition__moon {
   opacity: 0;
-  animation-name: theme-moon-rise;
+  transform: translate3d(-50%, var(--tt-travel, 2.75rem), 0);
+  animation: theme-enter-up var(--tt-reveal, 900ms) ease-out var(--tt-reveal-delay, 1100ms) forwards;
+}
+
+.theme-transition--to-dark .theme-transition__curtain {
+  background: #090a0f;
+  animation:
+    theme-curtain-in var(--tt-exit, 700ms) ease-in var(--tt-exit-delay, 400ms) forwards,
+    theme-curtain-out var(--tt-reveal, 900ms) ease-out var(--tt-reveal-delay, 1100ms) forwards;
 }
 
 .theme-transition--to-light .theme-transition__sky {
@@ -757,77 +798,83 @@ body {
     #fdba74 68%,
     #38bdf8 100%
   );
-  animation-name: theme-sky-to-light;
+}
+
+.theme-transition--to-light .theme-transition__sky.is-blocked {
+  background: linear-gradient(
+    180deg,
+    #38bdf8 0%,
+    #7dd3fc 40%,
+    #fdba74 68%,
+    #ffffff 100%
+  );
 }
 
 .theme-transition--to-light .theme-transition__moon {
-  animation-name: theme-moon-set;
+  animation: theme-exit-down var(--tt-exit, 700ms) ease-in var(--tt-exit-delay, 400ms) forwards;
 }
 
 .theme-transition--to-light .theme-transition__sun {
   opacity: 0;
-  animation-name: theme-sun-rise;
+  transform: translate3d(-50%, var(--tt-travel, 2.75rem), 0);
+  animation: theme-enter-up var(--tt-reveal, 900ms) ease-out var(--tt-reveal-delay, 1100ms) forwards;
 }
 
-@keyframes theme-sun-set {
-  to {
-    transform: translateX(-50%) translateY(120vh);
-    opacity: 0;
-  }
+.theme-transition--to-light .theme-transition__curtain {
+  background: #ffffff;
+  animation:
+    theme-curtain-in var(--tt-exit, 700ms) ease-in var(--tt-exit-delay, 400ms) forwards,
+    theme-curtain-out var(--tt-reveal, 900ms) ease-out var(--tt-reveal-delay, 1100ms) forwards;
 }
 
-@keyframes theme-moon-rise {
-  from {
-    transform: translateX(-50%) translateY(120vh);
-    opacity: 0;
-  }
-
+@keyframes theme-overlay-in {
   to {
-    transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
 }
 
-@keyframes theme-moon-set {
+@keyframes theme-overlay-out {
+  from {
+    opacity: 1;
+  }
+
   to {
-    transform: translateX(-50%) translateY(120vh);
     opacity: 0;
   }
 }
 
-@keyframes theme-sun-rise {
+@keyframes theme-exit-down {
+  to {
+    transform: translate3d(-50%, var(--tt-travel, 2.75rem), 0);
+    opacity: 0;
+  }
+}
+
+@keyframes theme-enter-up {
   from {
-    transform: translateX(-50%) translateY(120vh);
+    transform: translate3d(-50%, var(--tt-travel, 2.75rem), 0);
     opacity: 0;
   }
 
   to {
-    transform: translateX(-50%) translateY(0);
+    transform: translate3d(-50%, 0, 0);
     opacity: 1;
   }
 }
 
-@keyframes theme-sky-to-dark {
+@keyframes theme-curtain-in {
   to {
-    background: linear-gradient(
-      180deg,
-      #0f172a 0%,
-      #1e293b 40%,
-      #090a0f 68%,
-      #090a0f 100%
-    );
+    opacity: 1;
   }
 }
 
-@keyframes theme-sky-to-light {
+@keyframes theme-curtain-out {
+  from {
+    opacity: 1;
+  }
+
   to {
-    background: linear-gradient(
-      180deg,
-      #38bdf8 0%,
-      #7dd3fc 40%,
-      #fdba74 68%,
-      #ffffff 100%
-    );
+    opacity: 0;
   }
 }
 
@@ -858,13 +905,16 @@ body {
   .theme-transition,
   .theme-transition__sky,
   .theme-transition__sun,
-  .theme-transition__moon {
+  .theme-transition__moon,
+  .theme-transition__curtain {
     transition-duration: 0.01ms !important;
   }
 
+  .theme-transition,
   .theme-transition__sky,
   .theme-transition__sun,
-  .theme-transition__moon {
+  .theme-transition__moon,
+  .theme-transition__curtain {
     animation: none !important;
   }
 
