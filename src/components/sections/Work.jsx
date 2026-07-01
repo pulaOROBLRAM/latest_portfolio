@@ -10,7 +10,7 @@ function Work() {
       category: "WebApp",
       year: "2025",
       description: "An AI-powered skin analysis tool that delivers personalized recommendations based on user photos, offering a smart initial assessment that seamlessly connects you with skincare professionals.",
-      image: "../../../public/images/skinsight.png"
+      image: "images/skinsight.png"
     }
   ]
 
