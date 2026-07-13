@@ -98,7 +98,7 @@ function Contact() {
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
               Find me on
             </h3>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
