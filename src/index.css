@@ -935,6 +935,158 @@ html.theme-transition-active body {
   }
 }
 
+.project-modal {
+  margin: auto;
+  padding: 0;
+  border: none;
+  max-width: 42rem;
+  width: calc(100% - 1.5rem);
+  max-height: 90vh;
+  background: transparent;
+  color: var(--text-color);
+  overflow: visible;
+}
+
+.project-modal::backdrop {
+  background-color: rgb(2 6 23 / 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+[data-theme='dark'] .project-modal::backdrop {
+  background-color: rgb(0 0 0 / 0.65);
+}
+
+.project-modal__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-elevated);
+  box-shadow: 0 25px 50px -12px rgb(15 23 42 / 0.25);
+  transition:
+    background-color 0.45s ease,
+    border-color 0.45s ease,
+    color 0.45s ease;
+}
+
+.project-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  background-color: var(--surface-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.project-modal__close:hover {
+  color: var(--text-color);
+  background-color: var(--surface-color);
+}
+
+.project-modal__close:focus-visible {
+  outline: 2px solid var(--input-border-focus);
+  outline-offset: 2px;
+}
+
+.project-modal__body {
+  overflow-y: auto;
+  padding: 2.75rem 1.5rem 1.5rem 1.25rem;
+}
+
+.project-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.project-modal__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--text-color);
+}
+
+.project-modal__year {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  color: var(--text-subtle);
+}
+
+.project-modal__meta {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.project-modal__description {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.project-modal__contributions {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.project-modal__contributions-title {
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-color);
+}
+
+.project-modal__contributions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  list-style-type: disc;
+}
+
+.project-modal__contributions-list li::marker {
+  color: var(--text-subtle);
+}
+
+@media (min-width: 640px) {
+  .project-modal {
+    width: calc(100% - 3rem);
+  }
+
+  .project-modal__body {
+    padding: 2.75rem 1.75rem 1.75rem 1.5rem;
+  }
+
+  .project-modal__title {
+    font-size: 1.5rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html,
   .app-canvas,
