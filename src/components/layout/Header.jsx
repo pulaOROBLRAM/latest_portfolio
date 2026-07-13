@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 
 function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false })
+  const pillsRef = useRef(null)
+  const pillRefs = useRef({})
 
   const navLinks = [
     { name: 'Work', href: '#work' },
@@ -11,41 +13,58 @@ function Header() {
   ]
 
   useEffect(() => {
-    const sections = ['hero', 'work', 'about', 'contact'].map(id => 
+    const sections = ['hero', 'work', 'about', 'contact'].map(id =>
       document.getElementById(id)
     ).filter(Boolean)
-    
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 120
-      
+
       let current = 'hero'
-      
+
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i]
-        if (section && section.offsetTop <= scrollPosition) {
+        if (!section) continue
+        const top = section.getBoundingClientRect().top + window.scrollY
+        if (top <= scrollPosition) {
           current = section.id
           break
         }
       }
-      
+
       setActiveSection(current)
     }
-    
+
     window.addEventListener('scroll', handleScroll)
     handleScroll()
-    
+
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 640 && isMenuOpen) {
-        setIsMenuOpen(false)
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const container = pillsRef.current
+      const activeEl = pillRefs.current[activeSection]
+
+      if (!container || !activeEl) {
+        setIndicator((prev) => ({ ...prev, ready: false }))
+        return
       }
+
+      const containerRect = container.getBoundingClientRect()
+      const activeRect = activeEl.getBoundingClientRect()
+
+      setIndicator({
+        left: activeRect.left - containerRect.left,
+        width: activeRect.width,
+        ready: true,
+      })
     }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [isMenuOpen])
+
+    updateIndicator()
+    window.addEventListener('resize', updateIndicator)
+    return () => window.removeEventListener('resize', updateIndicator)
+  }, [activeSection])
 
   return (
     <header className="site-header">
@@ -69,37 +88,35 @@ function Header() {
           ))}
         </ul>
 
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="site-header__menu-btn sm:hidden p-2"
-          aria-label="Toggle menu"
-        >
-          <div className="w-6 h-5 relative flex flex-col justify-between">
-            <span className={`site-header__bar w-full h-0.5 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`site-header__bar w-full h-0.5 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
-            <span className={`site-header__bar w-full h-0.5 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-          </div>
-        </button>
+        <div ref={pillsRef} className="site-header__pills sm:hidden">
+          <span
+            className={`site-header__pill-indicator${indicator.ready ? ' site-header__pill-indicator--ready' : ''}`}
+            aria-hidden="true"
+            style={{
+              transform: `translateX(${indicator.left}px)`,
+              width: indicator.width,
+            }}
+          />
+          <ul className="site-header__pills-list" role="list">
+            {navLinks.map((link) => {
+              const id = link.href.substring(1)
+              const isActive = activeSection === id
 
-        <div
-          className={`site-header__drawer fixed inset-x-0 top-[61px] transition-all duration-300 sm:hidden ${
-            isMenuOpen ? 'opacity-100 visible max-h-96' : 'opacity-0 invisible max-h-0'
-          } overflow-hidden`}
-        >
-          <ul className="flex flex-col py-6 space-y-4">
-            {navLinks.map((link) => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`site-header__drawer-link block px-6 py-2 text-base ${
-                    activeSection === link.href.substring(1) ? 'site-header__drawer-link--active' : ''
-                  }`}
-                >
-                  {link.name}
-                </a>
-              </li>
-            ))}
+              return (
+                <li key={link.name}>
+                  <a
+                    ref={(el) => {
+                      pillRefs.current[id] = el
+                    }}
+                    href={link.href}
+                    className={`site-header__pill${isActive ? ' site-header__pill--active' : ''}`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {link.name}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </nav>

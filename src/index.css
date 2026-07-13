@@ -267,46 +267,64 @@ body {
   font-weight: 500;
 }
 
-.site-header__menu-btn {
-  color: var(--text-color);
-  transition: color 0.45s ease;
+.site-header__pills {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  background-color: var(--surface-color);
 }
 
-.site-header__menu-btn:hover {
-  color: var(--text-muted);
+.site-header__pills-list {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.site-header__bar {
+.site-header__pill-indicator {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  left: 0;
+  z-index: 0;
+  border-radius: 9999px;
   background-color: var(--text-color);
-  transition: background-color 0.45s ease;
-}
-
-.site-header__drawer {
-  background-color: var(--menu-bg);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(var(--header-blur));
-  -webkit-backdrop-filter: blur(var(--header-blur));
+  opacity: 0;
+  pointer-events: none;
   transition:
-    background-color 0.45s ease,
-    border-color 0.45s ease,
-    backdrop-filter 0.45s ease,
-    -webkit-backdrop-filter 0.45s ease;
-}
-
-.site-header__drawer-link {
-  color: var(--text-muted);
-  transition:
-    color 0.45s ease,
+    transform 0.28s ease,
+    width 0.28s ease,
+    opacity 0.2s ease,
     background-color 0.45s ease;
 }
 
-.site-header__drawer-link:hover {
+.site-header__pill-indicator--ready {
+  opacity: 0.12;
+}
+
+.site-header__pill {
+  display: block;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  color: var(--text-muted);
+  border-radius: 9999px;
+  transition: color 0.28s ease;
+}
+
+.site-header__pill:hover {
   color: var(--text-color);
 }
 
-.site-header__drawer-link--active {
+.site-header__pill--active {
   color: var(--text-color);
-  background-color: var(--surface-color);
   font-weight: 500;
 }
 
@@ -1093,11 +1111,11 @@ html.theme-transition-active body {
   .app-canvas::before,
   .app-canvas::after,
   .site-header,
-  .site-header__drawer,
-  .site-header__bar,
+  .site-header__pills,
+  .site-header__pill,
+  .site-header__pill-indicator,
   .site-header__logo,
   .site-header__link,
-  .site-header__menu-btn,
   .site-footer,
   .theme-toggle,
   .form-input,
